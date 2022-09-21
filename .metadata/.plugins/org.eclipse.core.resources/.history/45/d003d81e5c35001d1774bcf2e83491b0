@@ -1,0 +1,121 @@
+package model;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+
+import db_access.DBconnection;
+import db_access.ElezioneDAO;
+import db_access.ElezioneDAOIF;
+import db_access.VotoDAO;
+import db_access.VotoDAOIF;
+
+public class calcolaRisultatiReferendum implements calcoloRisultati{
+
+	public HashMap<String, Float> calcolaRisultati(String idElezione)throws SQLException {
+		ElezioneDAOIF edao = new ElezioneDAO();
+		VotoDAOIF vdao = new VotoDAO();
+		Elezione e;
+		try {
+			e = edao.getElezioneNonAttiva(idElezione);
+		}catch (Exception exc){
+			exc.printStackTrace();
+			return null;
+		}
+		
+		List<Voto> listaVoti;
+		
+		try{
+			listaVoti = vdao.getAll(e.id);
+		}catch(Exception exc){
+			exc.printStackTrace();
+			return null;
+		}
+		
+		if(e.tipoElezione.contains("referendum")){
+			if(e.tipoElezione.contains("con quorum")){
+
+				String query = "SELECT * FROM sistemavoto.utenti WHERE isAdmin = 0;";
+				Connection connessione = DBconnection.getConnection();
+				PreparedStatement ps;
+				try{
+					ps = connessione.prepareStatement(query);
+				}
+				catch(Exception exc){
+					exc.printStackTrace();
+					return null;
+				}
+				
+				ResultSet r;
+				
+				try {
+					r = ps.executeQuery();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					return null;
+				}
+				
+				int i = 0;
+				
+				try {
+					while(r.next()){
+						i++;
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					return null;
+				}
+				
+				if(i / 2 <= listaVoti.size()){
+					HashMap <String, Integer> results = new HashMap<String, Integer>();
+					results.put("quorum non raggiunto", 100);
+					return null;//results;
+				}
+				else{
+					HashMap <String, Integer> results = new HashMap<String, Integer>();
+					for (int j = 0; j < listaVoti.size(); j++){
+						if(results.containsKey(listaVoti.get(j).idCandidato)){
+							results.replace(listaVoti.get(j).idCandidato, results.get(listaVoti.get(j).idCandidato) + 1);
+						}
+						else{
+							results.put(listaVoti.get(j).idCandidato, 1);
+						}
+					}
+					
+					results.forEach((key, value) -> {
+						float temp = (value / listaVoti.size()) * 100;
+						value = (int) temp;
+					});  
+					
+					return null;//results;
+				}
+				
+			}
+			else if(e.tipoElezione.contains("senza quorum")){
+				HashMap <String, Integer> results = new HashMap<String, Integer>();
+				for (int j = 0; j < listaVoti.size(); j++){
+					if(results.containsKey(listaVoti.get(j).idCandidato)){
+						results.replace(listaVoti.get(j).idCandidato, results.get(listaVoti.get(j).idCandidato) + 1);
+					}
+					else{
+						results.put(listaVoti.get(j).idCandidato, 1);
+					}
+				}
+				
+				results.forEach((key, value) -> {
+					float temp = (value / listaVoti.size()) * 100;
+					value = (int) temp;
+				});  
+				
+				return results;
+			}
+		}
+		
+		return null;
+	}
+
+}

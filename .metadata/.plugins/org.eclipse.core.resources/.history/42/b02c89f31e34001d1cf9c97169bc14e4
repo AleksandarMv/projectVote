@@ -1,0 +1,5 @@
+package voto;
+
+public class visualizzaVincitoreController extends MainController{
+
+}

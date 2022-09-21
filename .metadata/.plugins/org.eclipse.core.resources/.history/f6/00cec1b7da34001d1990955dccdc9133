@@ -1,0 +1,26 @@
+package model;
+
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+
+import db_access.ElezioneDAO;
+import db_access.ElezioneDAOIF;
+import db_access.VotoDAO;
+import db_access.VotoDAOIF;
+
+public class calcolaRisultatiCategorico implements calcoloRisultati{
+
+	public HashMap calcolaRisultati(String idElezione) throws SQLException {
+		VotoDAOIF vdao = new VotoDAO();
+		List<Voto> listaVoti = vdao.getAll(idElezione);
+		HashMap<String, Integer> results = new HashMap<String, Integer>();
+		for(int i = 0; i < listaVoti.size(); i++){
+			if(results.containsKey(listaVoti.get(i).idCandidato)){
+				results.replace(listaVoti.get(i).idCandidato, results.get(listaVoti.get(i)) + 1);
+			}
+		}
+		return null;
+	}
+
+}

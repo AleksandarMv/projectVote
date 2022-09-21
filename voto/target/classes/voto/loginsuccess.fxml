@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="voto.ElettoreController">
+   <children>
+      <Label layoutX="273.0" layoutY="14.0" text="login successfull" />
+      <Button fx:id="logout" layoutX="285.0" layoutY="361.0" mnemonicParsing="false" onAction="#userLogout" text="LOGOUT" />
+      <Label fx:id="name" alignment="CENTER" layoutX="167.0" layoutY="39.0" prefHeight="17.0" prefWidth="273.0" textAlignment="CENTER" />
+      <ChoiceBox fx:id="scegli_elezione" layoutX="241.0" layoutY="188.0" prefWidth="150.0" />
+      <Label alignment="CENTER" layoutX="192.0" layoutY="158.0" prefHeight="17.0" prefWidth="247.0" text="Scegli una elezione in corso" />
+      <Button fx:id="continua" layoutX="284.0" layoutY="245.0" mnemonicParsing="false" onAction="#confermaSelezione" text="continua" />
+   </children>
+</Pane>

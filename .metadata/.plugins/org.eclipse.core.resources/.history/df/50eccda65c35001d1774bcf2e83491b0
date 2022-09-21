@@ -1,0 +1,53 @@
+package model;
+
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+
+import db_access.VotoDAO;
+import db_access.VotoDAOIF;
+
+public class calcolaRisultatiPreferenziale implements calcoloRisultati{
+
+	public HashMap<String,Float> calcolaRisultati(String idElezione) throws SQLException {
+		VotoDAOIF vdao = new VotoDAO();
+		List<Voto> listaVoti = vdao.getAll(idElezione);
+		HashMap<String, Float> results = new HashMap<String, Float>();
+		if(listaVoti == null || listaVoti.size() == 0){
+			results.put("nessuno ha votato",new Float(100));
+			return results;
+		}
+		for(int i = 0; i < listaVoti.size(); i++){
+			if(results.containsKey(listaVoti.get(i).idCandidato)){
+				results.put(listaVoti.get(i).idCandidato, results.get(listaVoti.get(i).idCandidato) + listaVoti.get(i).pesoVoto);
+			}
+			else{
+				results.put(listaVoti.get(i).idCandidato, new Float(listaVoti.get(i).pesoVoto));
+			}
+		}
+		
+		int pesoTotale = 0;
+		
+		for(int i = 0 ; i < listaVoti.size(); i++){
+			pesoTotale += listaVoti.get(i).pesoVoto;
+		}
+		
+		
+		//variabile finale per espressione lambda (forEach)
+		Integer finalPesoTotale = pesoTotale;
+		//calcolo percentuali
+		results.forEach((key, value) -> {
+			float temp = (value / finalPesoTotale) * 100;
+			results.put(key, temp);
+		});
+		
+		return results;
+	}
+	
+	public static void Main(String[] args){
+		calcolaRisultatiPreferenziale c = new calcolaRisultatiPreferenziale();
+		System.out.println("");
+	}
+}
+
+

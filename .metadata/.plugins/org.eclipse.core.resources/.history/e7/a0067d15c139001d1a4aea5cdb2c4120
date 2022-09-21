@@ -1,0 +1,191 @@
+package voto;
+
+import static org.junit.Assert.*;
+
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.sql.Date;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import db_access.CandidatoDAO;
+import db_access.CandidatoDAOIF;
+import db_access.DBconnection;
+import db_access.ElettoreDAO;
+import db_access.ElettoreDAOIF;
+import model.Admin;
+import model.Candidato;
+import model.Elettore;
+import model.Elezione;
+import model.Voto;
+import model.calcolaRisultatiCategorico;
+import model.calcolaRisultatiPreferenziale;
+import model.calcolaRisultatiReferendum;
+
+public class testModel {
+	@SuppressWarnings("deprecation")
+	@Before
+	public void initialize() throws SQLException, NoSuchAlgorithmException{
+		Connection connessione = DBconnection.getConnection();
+		String insSTR = "INSERT INTO `sistemavoto`.`utenti` (`username`, `password`, `nome`, `cognome`, `dataDiNascita`, `nazionedinascita`, `comunedinascita`, `isAdmin`, `codiceFiscale`, `sesso`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		PreparedStatement ps = connessione.prepareStatement(insSTR);
+		ps.setString(1, "testAdmin9821");
+		ps.setString(2, DBconnection.passwordhash("testAdmin9821"));
+		ps.setString(3, "testAdmin9821");
+		ps.setString(4, "testAdmin9821");
+		ps.setDate(5, new Date(2000, 9, 1));
+		ps.setString(6, "te");
+		ps.setString(7, "testCase");
+		ps.setInt(8, 1);
+		ps.setString(9, "");
+		ps.setString(10, "M");
+		ps.execute();
+		
+		
+		String insSTR2 = "INSERT INTO `sistemavoto`.`utenti` (`username`, `password`, `nome`, `cognome`, `dataDiNascita`, `nazionedinascita`, `comunedinascita`, `isAdmin`, `codiceFiscale`, `sesso`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		ps = connessione.prepareStatement(insSTR2);
+		ps.setString(1, "testuser9821");
+		ps.setString(2, DBconnection.passwordhash("testuser9821"));
+		ps.setString(3, "testuser9821");
+		ps.setString(4, "testuser9821");
+		ps.setDate(5, new Date(2000, 9, 1));
+		ps.setString(6, "te");
+		ps.setString(7, "testCase");
+		ps.setInt(8, 0);
+		ps.setString(9, "");
+		ps.setString(10, "M");
+		ps.execute();
+		ArrayList<Candidato> c = new ArrayList<Candidato>();
+		c.add(new Candidato("test1"));
+		c.add(new Candidato("test2"));
+		c.add(new Candidato("test3"));
+		Elezione e = new Elezione("testElezione9821", "categorico maggioranza | non assoluta", c);
+		Elezione.addElezioneToDB(e, Admin.loginAdmin("testAdmin9821", "testAdmin9821"));
+		
+		e = new Elezione("testCategorico9821", "categorico maggioranza | non assoluta", c);
+		Elezione.addElezioneToDB(e, Admin.loginAdmin("testAdmin9821", "testAdmin9821"));
+		
+		e = new Elezione("testPreferenziale9821", "preferenziale maggioranza | non assoluta", c);
+		Elezione.addElezioneToDB(e, Admin.loginAdmin("testAdmin9821", "testAdmin9821"));
+		
+		c = new ArrayList();
+		c.add(new Candidato("pro"));
+		c.add(new Candidato("contro"));
+		e = new Elezione("testReferendum9821", "referendum senza quorum", c);
+		
+		Voto v1 = new Voto("testCategorico9821", "test1", 1);
+		Voto v2 = new Voto("testCategorico9821", "test2", 1);
+		
+		Voto p1 = new Voto("testPreferenziale9821", "test1", 3);
+		Voto p2 = new Voto("testPreferenziale9821", "test2", 2);
+		Voto p3 = new Voto("testPreferenziale9821", "test3", 1);
+		
+		Voto r1 = new Voto("testReferendum9821", "pro",1);
+		
+		v1.registra(Elettore.loginElettore("testuser9821", "testuser9821"));
+		v2.registra(Elettore.loginElettore("testuser9821", "testuser9821"));
+		p1.registra(Elettore.loginElettore("testuser9821", "testuser9821"));
+		p2.registra(Elettore.loginElettore("testuser9821", "testuser9821"));
+		p3.registra(Elettore.loginElettore("testuser9821", "testuser9821"));
+		r1.registra(Elettore.loginElettore("testuser9821", "testuser9821"));
+		
+		Elezione.concludiElezione("testCategorico9821", Admin.loginAdmin("testAdmin9821", "testAdmin9821"));
+		Elezione.concludiElezione("testPreferenziale9821",Admin.loginAdmin("testAdmin9821", "testAdmin9821"));
+		Elezione.concludiElezione("testReferendum9821",Admin.loginAdmin("testAdmin9821", "testAdmin9821"));
+	}
+	
+	
+	@After
+	public void deleteTestUsers() throws SQLException{
+		Connection connessione = DBconnection.getConnection();
+		String insSTR = "DELETE FROM `sistemavoto`.`utenti` WHERE username = 'testAdmin9821';";
+		PreparedStatement ps = connessione.prepareStatement(insSTR);
+		ps.executeUpdate();
+		insSTR = "DELETE FROM `sistemavoto`.`utenti` WHERE username = 'testuser9821';";
+		ps = connessione.prepareStatement(insSTR);
+		ps.executeUpdate();
+		insSTR = "DELETE FROM `sistemavoto`.`candidati` WHERE idElezione = 'testElezione9821';";
+		ps = connessione.prepareStatement(insSTR);
+		ps.executeUpdate();
+		insSTR = "DELETE FROM `sistemavoto`.`elezioni` WHERE (`idElezioni` = 'testElezione9821');";
+		ps = connessione.prepareStatement(insSTR);
+		ps.executeUpdate();
+	}
+	@Test
+	//admin & admindao & dbconnection (no exceptions) 100%
+	public void testAdminModelAndDAO() throws NoSuchAlgorithmException, SQLException {
+		Admin a = Admin.loginAdmin("testAdmin9821", "testAdmin9821");
+		assertEquals(true, a.getAutenticato());
+		a.logoutAdmin();
+		assertEquals(false, a.getAutenticato());
+		a = Admin.loginAdmin(";", "lalala");
+		assertEquals(false, a.getAutenticato());
+	}
+	@Test
+	//elettore & elettoreDAO +/- 100%
+	public void testElettoreModelAndDAO() throws NoSuchAlgorithmException, SQLException{
+		Elettore e = Elettore.loginElettore("testuser9821", "testuser9821");
+		assertEquals(true, e.getautenticato());
+		e.logoutElettore();
+		assertEquals(false, e.getautenticato());
+		Connection connessione = DBconnection.getConnection();
+		String str = "SELECT COUNT(username) as count_users FROM `sistemavoto`.`utenti` WHERE isAdmin = 0";
+		PreparedStatement ps = connessione.prepareStatement(str);
+		ResultSet r = ps.executeQuery();
+		
+		r.next();
+		ElettoreDAOIF edao = new ElettoreDAO(); 
+		assertEquals(edao.countElettori(),r.getInt("count_users"));
+		assertEquals(true, e.getha18());
+		}
+	//
+	@Test
+	public void testElezioneModelAndDAO() throws SQLException, NoSuchAlgorithmException{
+		ArrayList<Candidato> c = new ArrayList<Candidato>();
+		
+		
+		c.add(new Candidato("test1"));
+		c.add(new Candidato("test2"));
+		c.add(new Candidato("test3"));
+		
+		assertEquals("testElezione9821", Elezione.getElezioneNonAttivaFromDB("testElezione9821").id);
+
+		Elezione.startElezione("testElezione9821", Admin.loginAdmin("testAdmin9821", "testAdmin9821"));
+		assertEquals("testElezione9821",Elezione.getElezioneAttivaFromDB("testElezione9821").id);
+		
+		Elezione.stopElezione("testElezione9821", Admin.loginAdmin("testAdmin9821", "testAdmin9821"));
+		assertEquals("testElezione9821", Elezione.getElezioneNonAttivaFromDB("testElezione9821").id);
+		
+		CandidatoDAOIF cdao= new CandidatoDAO();
+		assertEquals(true,"test1".equals(cdao.getCandidato("test1", "testElezione9821").id));
+		
+		
+		
+		assertEquals(c, Candidato.getAllCandidato("testElezione9821"));
+	}
+	
+	
+	@Test
+	public void testVoto() throws SQLException{
+		HashMap<String,Float> risultatiC = new HashMap<String,Float>();
+		risultatiC.put("test1", new Float(100));
+		HashMap<String,Float> risultatiP = new HashMap<String,Float>();
+		risultatiP.put("test1", new Float(3.0/6.0));
+		risultatiP.put("test2", new Float(2.0/6.0));
+		risultatiP.put("test3", new Float(1.0/6.0));
+		HashMap<String,Float> risultatiR = new HashMap<String,Float>();
+		risultatiP.put("pro", new Float(100));
+		calcolaRisultatiCategorico rC = new calcolaRisultatiCategorico();
+		calcolaRisultatiPreferenziale rP = new calcolaRisultatiPreferenziale();
+		calcolaRisultatiReferendum rR = new calcolaRisultatiReferendum();
+		assertEquals(risultatiC, rC.calcolaRisultati("testCategorico9821"));
+		}
+
+}

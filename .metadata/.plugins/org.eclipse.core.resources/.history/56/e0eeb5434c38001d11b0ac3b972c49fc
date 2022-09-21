@@ -1,0 +1,15 @@
+package model;
+
+public class Candidato{
+	public final String id;
+	
+	public Candidato(String nome){
+		id = nome;
+	}
+	@Override
+	public String toString(){
+		return id;
+	}
+	
+	
+}

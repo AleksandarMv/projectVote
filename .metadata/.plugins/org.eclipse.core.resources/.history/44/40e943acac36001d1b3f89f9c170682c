@@ -1,0 +1,150 @@
+package voto;
+
+import java.io.IOException;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ResourceBundle;
+
+import data_manager.DataController;
+import db_access.ElezioneDAO;
+import db_access.ElezioneDAOIF;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import model.Elezione;
+import model.calcolaRisultatiCategorico;
+import model.calcolaRisultatiPreferenziale;
+import model.calcolaRisultatiReferendum;
+import model.calcoloRisultati;
+
+public class visualizzaVincitoreController extends MainController implements Initializable{
+	
+	@FXML
+	private ListView<String> gridVincitore;
+	
+	@FXML
+	private Button back;
+	
+	@FXML
+	private Label labelVincitore;
+	
+	public void backButton(ActionEvent event) throws IOException{
+		cleanDataController();
+		App.setRoot("scegliElezioneVincitore");
+	}
+	
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		
+		ElezioneDAOIF edao = new ElezioneDAO();
+		Elezione e = null;
+		calcoloRisultati c = null;
+		HashMap <String,Float>results = null;
+		try {
+			e = edao.getElezioneNonAttiva(DataController.idElezioneSelezionata);
+		} catch (SQLException exc) {
+			exc.printStackTrace();
+			return;
+		}
+		if(e.tipoElezione.contains("referendum")){
+			c = new calcolaRisultatiReferendum();
+			try {
+				results = c.calcolaRisultati(e.id);
+				System.out.println(results);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				return;
+			}
+			System.out.println(results);
+			ArrayList<String> winnerKey = new ArrayList<String>();
+			ArrayList<Float> winnerValue = new ArrayList<Float>();
+			winnerKey.add((String) results.keySet().toArray()[0]);
+			winnerValue.add(results.get((String)results.keySet().toArray()[0]));
+			System.out.println(winnerKey + " | " + winnerValue);
+			results.forEach((key, value) -> {
+				if(value > winnerValue.get(0)){
+					winnerValue.set(0, value);
+					winnerKey.set(0, key);
+				}
+				gridVincitore.getItems().add(key + " ha il " + value + "% di voti");
+			});
+			labelVincitore.setText(winnerKey.get(0) + " ha vinto con il " + winnerValue.get(0) + "%");
+			return;
+		}
+		else if(e.tipoElezione.contains("preferenziale")){
+			//da implementare vincitore assoluto / relativo
+			c = new calcolaRisultatiPreferenziale();
+			try {
+				results = c.calcolaRisultati(e.id);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				return;
+			}
+			ArrayList<String> winnerKey = new ArrayList<String>();
+			ArrayList<Float> winnerValue = new ArrayList<Float>();
+			winnerKey.add((String) results.keySet().toArray()[0]);
+			winnerValue.add(results.get((String)results.keySet().toArray()[0]));
+			System.out.println(winnerKey + " | " + winnerValue);
+			results.forEach((key, value) -> {
+				if(value > winnerValue.get(0)){
+					winnerValue.set(0, value);
+					winnerKey.set(0, key);
+				}
+				gridVincitore.getItems().add(key + " ha il " + value + "% di voti");
+			});
+			if(e.tipoElezione.contains("maggioranza assoluta")){
+				if(winnerValue.get(0)<= 50){
+					labelVincitore.setText("maggioranza assoluta non raggiunta");
+				}
+			}
+			else{
+				labelVincitore.setText(winnerKey.get(0) + " ha vinto con il " + winnerValue.get(0) + "%");
+				
+			}
+			return;
+		}
+		else if(e.tipoElezione.contains("categorico con preferenze")){
+			
+			
+			return;
+		}else if(e.tipoElezione.contains("categorico")){
+			c = new calcolaRisultatiCategorico();
+			try {
+				results = c.calcolaRisultati(e.id);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				return;
+			}
+			ArrayList<String> winnerKey = new ArrayList<String>();
+			ArrayList<Float> winnerValue = new ArrayList<Float>();
+			winnerKey.add((String) results.keySet().toArray()[0]);
+			winnerValue.add(results.get((String)results.keySet().toArray()[0]));
+			System.out.println(winnerKey + " | " + winnerValue);
+			results.forEach((key, value) -> {
+				if(value > winnerValue.get(0)){
+					winnerValue.set(0, value);
+					winnerKey.set(0, key);
+				}
+				gridVincitore.getItems().add(key + " ha il " + value + "% di voti");
+			});
+			if(e.tipoElezione.contains("maggioranza assoluta")){
+				if(winnerValue.get(0)<= 50){
+					labelVincitore.setText("maggioranza assoluta non raggiunta");
+				}
+			}
+			else{
+				labelVincitore.setText(winnerKey.get(0) + " ha vinto con il " + winnerValue.get(0) + "%");
+				
+			}
+			return;
+			
+			return;
+		}
+		
+	}
+	
+}

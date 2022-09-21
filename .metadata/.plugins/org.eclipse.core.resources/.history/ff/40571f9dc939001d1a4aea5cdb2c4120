@@ -1,0 +1,51 @@
+package model;
+
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import db_access.AdminDAO;
+import db_access.AdminDAOIF;
+public class Admin extends Persona {
+	
+	private static boolean autenticato;
+
+	public Admin() {
+		autenticato = false;
+	}
+	
+	//modifica autenticato---> autenticato = s
+	private void setAutenticato(boolean s){
+		autenticato = s;
+	}
+	
+	//restituisce se l'admin Ã¨ autenticato
+	public boolean getAutenticato(){
+		return autenticato;
+	}
+	
+	//restituisce un Admin autenticato con credenziali username & password se esiste nel db altrimenti restituisce un Admin non autenticato
+	public static Admin loginAdmin(String username, String password)throws SQLException, NoSuchAlgorithmException{
+		//controllo input su username, non puo contenere ";"  
+		//non ce bisogno di controllo input su password perche la funzione 
+		//DBconnection.passwordHash che viene usata per cercare psw nel db non genera stringhe con ";"
+		AdminDAOIF A = new AdminDAO(); 
+		if (username.contains(";")){
+			Admin f = new Admin();
+			f.setAutenticato(false); 
+			return f;
+		}
+		
+		Admin a = A.AdminLogin(username, password);
+		if(a != null){
+			a.setAutenticato(true);
+			return a;
+		}
+		
+	}
+	
+	//modfica this come un Admin non autenticato
+	public void logoutAdmin(){
+		this.setAutenticato(false);
+	}
+
+}
+

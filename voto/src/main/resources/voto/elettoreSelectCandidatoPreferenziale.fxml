@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Text?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="voto.ElettoreSelectCandidatoPreferenziale">
+   <children>
+      <ChoiceBox fx:id="tuttiCandidati" layoutX="116.0" layoutY="175.0" prefWidth="150.0" />
+      <Text layoutX="166.0" layoutY="164.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Candidati" />
+      <ChoiceBox fx:id="posizione" layoutX="334.0" layoutY="175.0" prefWidth="150.0" />
+      <Text layoutX="384.0" layoutY="164.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Posizione" />
+      <Text layoutX="51.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="una posizione bassa indica una preferenza alta, una posizione alta indica una preferenza bassa" />
+      <Text layoutX="251.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Voto preferenziale" />
+      <Button fx:id="confermaSelezione" layoutX="265.0" layoutY="227.0" mnemonicParsing="false" onAction="#registraRisposta" text="Conferma" />
+      <Text layoutX="135.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" text="accoppia un candidato con una posizione e clicca su conferma" />
+      <Text layoutX="82.0" layoutY="97.0" strokeType="OUTSIDE" strokeWidth="0.0" text="quando non ci sono piu candidati disponibili cliccare su conferma per inviare tutto" />
+      <Button fx:id="back" layoutX="253.0" layoutY="340.0" mnemonicParsing="false" onAction="#backAction" text="Torna indietro" />
+      <Button fx:id="schedaBianca" layoutX="495.0" layoutY="365.0" mnemonicParsing="false" onAction="#schedabianca" text="scheda bianca" />
+   </children>
+</Pane>

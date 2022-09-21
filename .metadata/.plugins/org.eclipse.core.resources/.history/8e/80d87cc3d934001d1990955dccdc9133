@@ -1,0 +1,22 @@
+package model;
+
+import java.sql.SQLException;
+import java.util.HashMap;
+
+import db_access.ElezioneDAO;
+import db_access.ElezioneDAOIF;
+import db_access.VotoDAO;
+import db_access.VotoDAOIF;
+
+public class calcolaRisultatiCategorico implements calcoloRisultati{
+
+	public HashMap calcolaRisultati(String idElezione) throws SQLException {
+		ElezioneDAOIF edao = new ElezioneDAO();
+		Elezione e = edao.getElezioneAttiva(idElezione);
+		VotoDAOIF vdao = new VotoDAO();
+		List<Voto> listaVoti = vdao.getAll(idElezione);
+		
+		return null;
+	}
+
+}

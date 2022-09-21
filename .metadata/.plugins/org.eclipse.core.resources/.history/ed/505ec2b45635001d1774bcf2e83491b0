@@ -1,0 +1,26 @@
+package model;
+
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
+
+import db_access.VotoDAO;
+import db_access.VotoDAOIF;
+
+public class calcolaRisultatiCategoricoConPreferenze implements calcoloRisultati{
+
+	@Override
+	public HashMap<String, Integer> calcolaRisultati(String idElezione) throws SQLException {
+		VotoDAOIF vdao = new VotoDAO();
+		List<Voto> listaVoti = vdao.getAll(idElezione);
+		HashMap<String, Integer> results = new HashMap<String, Integer>();
+		for(int i = 0; i < listaVoti.size(); i++){
+			Scanner s = new Scanner(listaVoti.get(i).idCandidato);
+			
+			
+		}
+		return null;
+	}
+
+}

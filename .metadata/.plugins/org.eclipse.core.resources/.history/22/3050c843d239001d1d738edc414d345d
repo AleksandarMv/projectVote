@@ -1,0 +1,79 @@
+package model;
+
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import db_access.ElettoreDAO;
+import db_access.ElettoreDAOIF;
+
+public class Elettore extends Persona {
+	//@public invariant (ha18 == false) ==> (Voto == false);
+	//@public invariant ha18 == 18 < (2021 - DataDiNascita[2]);
+	//@public invariant cfvalido() == true;
+	
+	private /*@ spec_public @*/boolean ha18;
+	
+	private static /*@ spec_public @*/boolean autenticato;
+	
+	public Elettore(){
+		super();
+	}
+	
+	private void setha18(){
+		if (DataDiNascita == null){
+			ha18 = false; 
+			return;
+		}
+		int eta = (2021 - DataDiNascita[2]);
+		int anni18 = 18;
+		if(eta>anni18){
+			ha18 = true;
+		}else{
+			ha18 = false;
+		}
+	}
+	
+	//restituisce se l'elettore ha piu di 18 anni
+	public boolean getha18(){
+		setha18();
+		return ha18;
+	}
+	
+	//modifica autenticato---> autenitcato = a
+	private void setautenticato(boolean a){
+		autenticato = a;
+	}
+	
+	//restituisce se l'elettore è autenticato
+	public boolean getautenticato(){
+		return autenticato;
+	}
+	
+	
+	//restituisce un Elettore autenticato con credenziali username & password se esiste nel db altrimenti restituisce un Elettore non autenticato
+	public static Elettore loginElettore(String username, String password)throws SQLException, NoSuchAlgorithmException{
+		//controllo input su username, non puo contenere ";"  
+		//non ce bisogno di controllo input su password perche la funzione 
+		//DBconnection.passwordHash che viene usata per cercare psw nel db non genera stringhe con ";"
+		
+		ElettoreDAOIF E = new ElettoreDAO();
+		if (username.contains(";")){
+			Elettore f = new Elettore();
+			f.setautenticato(false);
+			return f;
+		}
+		Elettore e = E.checkLogin(username, password);
+		e.setautenticato(true);
+		return e;
+	}
+	
+	//modifica this come un elettore non autenticato
+	public void logoutElettore(){
+		this.setautenticato(false);
+		return;
+	}
+	
+	@Override
+	public String toString(){
+		return "nome:" + Nome + "; cognome:"+ Cognome +"; ddn:" + DataDiNascita[0] + "/"+ DataDiNascita[1]+"/"+DataDiNascita[2]+"; S:"+Sesso + "; cf:" + cf2string(this.CodiceFiscale) +"; cfvalido: "+ cfvalido() + "; ha 18 anni ?" + ha18;
+	}
+}

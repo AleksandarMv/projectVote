@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Text?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="voto.ElettoreSelectCandidatoReferendum">
+   <children>
+      <Button fx:id="pro" layoutX="228.0" layoutY="200.0" mnemonicParsing="false" onAction="#confermaPro" text="Pro" />
+      <Button fx:id="contro" layoutX="335.0" layoutY="200.0" mnemonicParsing="false" onAction="#confermaContro" text="Contro" />
+      <Text layoutX="185.0" layoutY="139.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Selezionare se si è pro o contro la proposta" />
+      <Button fx:id="back" layoutX="255.0" layoutY="340.0" mnemonicParsing="false" onAction="#backAction" text="Torna indietro" />
+      <Button fx:id="schedaBianca" layoutX="495.0" layoutY="365.0" mnemonicParsing="false" onAction="#schedabianca" prefHeight="25.0" prefWidth="91.0" text="scheda bianca" />
+   </children>
+</Pane>

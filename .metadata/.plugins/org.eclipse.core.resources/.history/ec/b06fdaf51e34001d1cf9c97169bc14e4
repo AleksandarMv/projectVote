@@ -1,0 +1,7 @@
+package voto;
+
+import javafx.fxml.Initializable;
+
+public class visualizzaVincitoreController extends MainController implements Initializable{
+	
+}

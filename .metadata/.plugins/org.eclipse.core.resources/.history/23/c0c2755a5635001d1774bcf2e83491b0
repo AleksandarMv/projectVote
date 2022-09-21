@@ -1,0 +1,14 @@
+package model;
+
+import java.sql.SQLException;
+import java.util.HashMap;
+
+public class calcolaRisultatiCategoricoConPreferenze implements calcoloRisultati{
+
+	@Override
+	public HashMap<String, Integer> calcolaRisultati(String idElezione) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}
